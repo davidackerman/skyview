@@ -8,10 +8,11 @@ class ScyView(dict):
 
     # Config could be read from file
     def config(self):
-        self['fiji_directory'] = './Fiji.app'
+        self['fiji_directory'] = '/Applications/Fiji.app' #'./Fiji.app'
         return self
 
     def run(self, cmd='sc.iview.commands.LaunchViewer', args={}):
+        print(self['fiji_directory'])
         if (args == {}):
             return self.ij.command().run(cmd, True).get()
         else:
@@ -24,6 +25,7 @@ class ScyView(dict):
                 str(args[list(args.keys())[0]])).get()
 
     def create(self):
+        print(self['fiji_directory'])
         self.ij = imagej.init(self['fiji_directory'], headless=False)
         import jnius
         global GLVector, jArray, jFloat

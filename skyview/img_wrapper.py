@@ -1,9 +1,10 @@
 from . import configure_jnius  # noqa
 # imagej importing is order-sensitive w.r.t. imglyb/jnius
 import imagej  # noqa
-__fiji_directory__ = './Fiji.app'  # noqa
+__fiji_directory__ = '/groups/scicompsoft/home/ackermand/Fiji.app' # '/Applications/Fiji.app'  # noqa
 # Launch ImageJ's JVM and setup classpath
 ij = imagej.init(__fiji_directory__, headless=False)  # noqa
+import scyjava
 
 import imglyb.accesses
 import imglyb.types
@@ -28,6 +29,17 @@ class MakeAccessBiFunction(PythonJavaClass):
     @java_method('(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;')
     def apply(self, t, u):
         return self.func(t, u)
+    
+class MakeAccessFunction3(PythonJavaClass):
+    __javainterfaces__ = ['kotlin/jvm/functions/Function3']
+
+    def __init__(self, func):
+        super(MakeAccessFunction3, self).__init__()
+        self.func = func
+
+    @java_method('(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;')
+    def invoke(self, p1, p2, p3, p4):
+        return self.func(p1, p2, p3, p4)
 
 
 def chunk_index_to_slices(shape, chunk_shape, cell_index):
@@ -78,6 +90,15 @@ def get_chunk_access(array, chunk_shape, index, size):
                 print(line)
         raise e
 
+def set_object_selection_mode():
+    return MakeAccessFunction3(
+        lambda p1, raycast_result, x, y : do_stuff_with_selection(raycast_result, x, y))
+
+def do_stuff_with_selection(raycast_result, x, y):  
+    matches = scyjava.to_python(raycast_result.getMatches())
+    if matches: 
+        closest_node = matches[ 0 ].getNode()
+        print("matches: {} x: {} y: {}\n".format(closest_node.getName(),x,y))
 
 def arraylike_to_img(array, chunk_shape):
 

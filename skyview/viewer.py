@@ -1,5 +1,7 @@
 from .annotation_layer import AnnotationLayer
-from .img_wrapper import ij
+from .img_wrapper import ij, arraylike_to_img, set_object_selection_mode
+from jnius import cast
+
 from .volume import Volume
 import daisy
 
@@ -8,6 +10,8 @@ class Viewer:
     def __init__(self):
 
         self.volumes = {}
+        self.volume_nodes = {}
+        self.updated_volume_name_count=0
         self.annotation_layers = {}
         self.sciview = self.__create_sciview()
 
@@ -17,7 +21,8 @@ class Viewer:
             array,
             chunk_shape=None,
             voxel_size=None,
-            offset=None):
+            offset=None,
+            lut_name=None):
 
         if isinstance(array, daisy.Array):
 
@@ -33,9 +38,28 @@ class Viewer:
         volume = Volume(array, chunk_shape, voxel_size, offset)
         self.volumes[name] = volume
 
-        self.sciview.addVolume(volume.to_img())
-
+        volume_node=self.sciview.addVolume(volume.to_img())
+        
+        volume_node.setName(name)
+        
+        
+        if lut_name:
+            self.sciview.setColormap(volume_node,lut_name)
+        
+        self.volume_nodes[name] = volume_node
+                    
         return volume
+    
+    def update_volume(self,
+            updated_array,
+            name):
+       self.volumes[name].data = updated_array
+       volume_cast = cast('graphics.scenery.volumes.Volume', self.volume_nodes[name])
+       
+       self.sciview.updateVolume(self.volumes[name].to_img(),"{}".format(self.updated_volume_name_count),[250,250,250],volume_cast)
+       self.updated_volume_name_count += 1
+
+        #return volume
 
     def add_annotation_layer(self, name):
 
@@ -62,4 +86,5 @@ class Viewer:
         result = ij.command().run(cmd, True).get()
         sciview = result.getOutput('sciView')
         sciview.getFloor().setVisible(False)
+        sciview.setObjectSelectionMode(set_object_selection_mode())
         return sciview
