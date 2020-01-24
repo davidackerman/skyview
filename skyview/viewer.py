@@ -1,6 +1,8 @@
 from .annotation_layer import AnnotationLayer
-from .img_wrapper import ij, arraylike_to_img, set_object_selection_mode
+from .img_wrapper import ij, MakeAccessFunction3
 from jnius import cast
+
+import scyjava
 
 from .volume import Volume
 import daisy
@@ -58,6 +60,14 @@ class Viewer:
        
        self.sciview.updateVolume(self.volumes[name].to_img(),"{}".format(self.updated_volume_name_count),[250,250,250],volume_cast)
        self.updated_volume_name_count += 1
+       
+    def update_node(self,
+            name):
+       self.sciview
+       self.volumes[name].data = updated_array
+       volume_cast = cast('graphics.scenery.Node', self.volume_nodes[name])
+       self.sciview.nodeP .updateProperties(node)
+       self.sciview.updateVolume(self.volumes[name].to_img(),"{}".format(self.updated_volume_name_count),[250,250,250],volume_cast)
 
         #return volume
 
@@ -79,6 +89,20 @@ class Viewer:
 
     def close(self):
         self.sciview.close()
+        
+    def set_object_selection_mode(self):
+        return MakeAccessFunction3(
+            lambda p1, raycast_result, x, y : self.do_stuff_with_selection(raycast_result, x, y))
+
+    def do_stuff_with_selection(self,raycast_result, x, y):  
+        matches = scyjava.to_python(raycast_result.getMatches())
+        if matches:
+            closest_node = matches[ 0 ].getNode()
+            self.sciview.centerOnNode(closest_node)
+            print(matches)
+            print(closest_node.getNodeType() )
+            
+            print("matches: {} x: {} y: {}\n".format(closest_node.getName(),x,y))
 
     def __create_sciview(self):
         # Launch SciView inside ImageJ
@@ -86,5 +110,5 @@ class Viewer:
         result = ij.command().run(cmd, True).get()
         sciview = result.getOutput('sciView')
         sciview.getFloor().setVisible(False)
-        sciview.setObjectSelectionMode(set_object_selection_mode())
+        sciview.setObjectSelectionMode(self.set_object_selection_mode())
         return sciview

@@ -67,7 +67,7 @@ if __name__ == "__main__":
                 float(random.uniform(-10, 10))   # x
             ),
             color=(128, k*10, 243),
-            radius=2.0
+            radius=random.uniform(0.5, 2.5)
         )    
     
 #     # register basic callbacks
