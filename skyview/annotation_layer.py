@@ -20,7 +20,7 @@ class AnnotationLayer:
         sphere = Sphere(position, color, radius)
         self.annotations[sphere.id] = sphere
 
-        color = self.sciview.getGLVector(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1))
+        color = self.sciview.getGLVector(1, 1, 1)
         sc_material = __scMaterial__()
         sc_material.setAmbient(color)
         sc_material.setDiffuse(color)

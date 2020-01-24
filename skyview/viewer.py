@@ -98,7 +98,19 @@ class Viewer:
         matches = scyjava.to_python(raycast_result.getMatches())
         if matches:
             closest_node = matches[ 0 ].getNode()
-            self.sciview.centerOnNode(closest_node)
+            #self.sciview.centerOnNode(closest_node)
+            material = closest_node.getMaterial();
+            current_grayscale_color = material.diffuse.get(0)
+            new_grayscale_color = 1.0
+            if current_grayscale_color == 1.0:
+                new_grayscale_color = 0.2
+                
+            color = self.sciview.getGLVector(new_grayscale_color, new_grayscale_color, new_grayscale_color)
+            material.setAmbient(color)
+            material.setDiffuse(color)
+            material.setSpecular(color)
+            #closest_node.set
+            #closest_node.setPosition(self.sciview.getGLVector(0, 0, 0))
             print(matches)
             print(closest_node.getNodeType() )
             
