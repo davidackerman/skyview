@@ -1,7 +1,12 @@
 from . import configure_jnius  # noqa
 # imagej importing is order-sensitive w.r.t. imglyb/jnius
 import imagej  # noqa
-__fiji_directory__ = '/groups/scicompsoft/home/ackermand/Fiji.app' # '/Applications/Fiji.app'  # noqa
+import sys
+
+__fiji_directory__ = '/groups/scicompsoft/home/ackermand/Fiji.app' #  # noqa
+if sys.platform == 'darwin':
+    __fiji_directory__ = '/Applications/Fiji.app' 
+    
 # Launch ImageJ's JVM and setup classpath
 ij = imagej.init(__fiji_directory__, headless=False)  # noqa
 import scyjava

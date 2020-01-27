@@ -114,9 +114,18 @@ class Viewer:
             #closest_node.setPosition(self.sciview.getGLVector(0, 0, 0))
             print(matches)
             print(closest_node.getNodeType() )
+            camera = self.sciview.getCamera()
+            self.printGL(camera.getPosition(), "camera position: ")
+            self.printGL(camera.getForward(), "camera forward: ")
+            print("field of view: {}".format(camera.getFov()))
+
+            print("pos x: {} y: {} z: {}\n".format(closest_node.getPosition().get(0), closest_node.getPosition().get(1), closest_node.getPosition().get(2)))
             
             print("matches: {} x: {} y: {}\n".format(closest_node.getName(),x,y))
 
+    def printGL(self, glvector, description=""):
+        print("{} {}, {}, {}\n".format(description, glvector.get(0),glvector.get(1),glvector.get(2)))
+        
     def __create_sciview(self):
         # Launch SciView inside ImageJ
         cmd = 'sc.iview.commands.LaunchViewer'
