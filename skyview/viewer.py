@@ -1,6 +1,7 @@
 from .annotation_layer import AnnotationLayer
 from .img_wrapper import ij, MakeAccessFunction3
-from jnius import cast
+#from jnius import cast
+import jnius
 
 import scyjava
 
@@ -15,8 +16,10 @@ class Viewer:
         self.volume_nodes = {}
         self.updated_volume_name_count=0
         self.annotation_layers = {}
+
         self.sciview = self.__create_sciview()
 
+        
     def add_volume(
             self,
             name,
@@ -98,6 +101,7 @@ class Viewer:
         matches = scyjava.to_python(raycast_result.getMatches())
         if matches:
             closest_node = matches[ 0 ].getNode()
+            self.sciview.setActiveNode(closest_node)
             #self.sciview.centerOnNode(closest_node)
             material = closest_node.getMaterial()
             position = closest_node.getPosition()
@@ -119,12 +123,12 @@ class Viewer:
             self.printGL(camera.getForward(), "camera forward: ")
             print("field of view: {}".format(camera.getFov()))
 
-            print("pos x: {} y: {} z: {}\n".format(closest_node.getPosition().get(0), closest_node.getPosition().get(1), closest_node.getPosition().get(2)))
+            print("pos x: {} y: {} z: {}".format(closest_node.getPosition().get(0), closest_node.getPosition().get(1), closest_node.getPosition().get(2)))
             
-            print("matches: {} x: {} y: {}\n".format(closest_node.getName(),x,y))
+            print("matches: {} x: {} y: {}".format(closest_node.getName(),x,y))
 
     def printGL(self, glvector, description=""):
-        print("{} {}, {}, {}\n".format(description, glvector.get(0),glvector.get(1),glvector.get(2)))
+        print("{} {}, {}, {}".format(description, glvector.get(0),glvector.get(1),glvector.get(2)))
         
     def __create_sciview(self):
         # Launch SciView inside ImageJ
@@ -133,4 +137,12 @@ class Viewer:
         sciview = result.getOutput('sciView')
         sciview.getFloor().setVisible(False)
         sciview.setObjectSelectionMode(self.set_object_selection_mode())
+        
+                
+        NodeTranslateControl = jnius.autoclass('sc.iview.controls.behaviours.NodeTranslateControl')
+        node_translate_control = NodeTranslateControl(sciview, .001)
+        h = sciview.getInputHandler()
+        h.addBehaviour( "nt", node_translate_control );
+        h.addKeyBinding("nt","T button1")
+        #h.setBehaviour("button1 ")
         return sciview
