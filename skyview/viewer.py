@@ -99,7 +99,8 @@ class Viewer:
         if matches:
             closest_node = matches[ 0 ].getNode()
             #self.sciview.centerOnNode(closest_node)
-            material = closest_node.getMaterial();
+            material = closest_node.getMaterial()
+            position = closest_node.getPosition()
             current_grayscale_color = material.diffuse.get(0)
             new_grayscale_color = 1.0
             if current_grayscale_color == 1.0:
