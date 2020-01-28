@@ -1,5 +1,6 @@
 from .annotation_layer import AnnotationLayer
-from .img_wrapper import ij, MakeAccessFunction3, MoveNode
+from .img_wrapper import ij, MakeAccessFunction3
+from .node_movement import MoveNode
 #from jnius import cast
 import jnius
 
@@ -102,18 +103,17 @@ class Viewer:
         if matches:
             closest_node = matches[ 0 ].getNode()
             self.sciview.setActiveNode(closest_node)
-            #MovementCommand = jnius.autoclass('graphics.scenery.controls.behaviours.MovementCommand')
-            #movement_command =  MovementCommand("move_up", "up", closest_node, 1.0 )
-            #h = self.sciview.getInputHandler()
-            #h.addBehaviour("move_node_up_fast", movement_command )
-            #h.addKeyBinding("move_node_up_fast", "shift X");
-
-            temp = MoveNode(self.sciview)
-            NodeTranslateControl = jnius.autoclass('sc.iview.controls.behaviours.NodeTranslateControl')
-            node_translate_control = NodeTranslateControl(self.sciview, .001)
-            h = self.sciview.getInputHandler()
-            h.addBehaviour( "nt", temp );
-            h.addKeyBinding("nt","shift X")
+            h = self.sciview.publicGetInputHandler()
+            speed_keybindings = {"slow":"", "fast":"shift ", "veryfast": "ctrl shift "}
+            direction_keybindings = {"up":"X","down":"C","left":"A"}#,"right":"D","forward":"W","back":"S"}
+            for speed in speed_keybindings:
+                for direction in direction_keybindings:
+                    behaviour_name = "node_move_"+direction+"_"+speed
+                    keybinding = speed_keybindings[speed]+direction_keybindings[direction]
+                    movement_command = MoveNode(self.sciview, behaviour_name)
+                    print("{},{}".format(behaviour_name, keybinding))
+                    h.addBehaviour(behaviour_name, movement_command )
+                    h.addKeyBinding(behaviour_name,keybinding)
         
             #self.sciview.centerOnNode(closest_node)
             material = closest_node.getMaterial()

@@ -23,22 +23,6 @@ import numpy as np
 
 PythonHelpers = autoclass('net.imglib2.python.Helpers')
 
-class MoveNode(PythonJavaClass):
-    __javainterfaces__ = ['org.scijava.ui.behaviour.ClickBehaviour']
-
-    def __init__(self, sciview):
-        super(MoveNode, self).__init__()
-        self.sciview = sciview
-        self.camera = sciview.getCamera()
-        self.active_node = sciview.getActiveNode()
-        
-    @java_method('(II)V')
-    def click(self,x,y):
-        self.active_node.setPosition(self.sciview.getGLVector(self.active_node.position.get(0) + self.camera.up.get(0) * 1.0 * self.camera.deltaT,
-                                                                  self.active_node.position.get(1) + self.camera.up.get(1) * 1.0 * self.camera.deltaT,
-                                                                  self.active_node.position.get(2) + self.camera.up.get(2) * 1.0 * self.camera.deltaT))
-        return print("heyyyy")
-
 class MakeAccessBiFunction(PythonJavaClass):
     __javainterfaces__ = ['java/util/function/BiFunction']
 
