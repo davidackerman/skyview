@@ -9,6 +9,8 @@ import scyjava
 from .volume import Volume
 import daisy
 
+import time
+
 class Viewer:
 
     def __init__(self):
@@ -104,16 +106,29 @@ class Viewer:
             closest_node = matches[ 0 ].getNode()
             self.sciview.setActiveNode(closest_node)
             h = self.sciview.publicGetInputHandler()
+            
+            #move with camera
+#             speed_keybindings = {"slow":"", "fast":"shift ", "veryfast": "ctrl shift "}
+#             direction_keybindings = {"up":"X","down":"C","left":"A","right":"D","forward":"W","back":"S"}
+#             for speed in speed_keybindings:
+#                 for direction in direction_keybindings:
+#                     behaviour_name = "camera_and_node_move_"+direction+"_"+speed
+#                     keybinding = speed_keybindings[speed]+direction_keybindings[direction]
+#                     movement_command = MoveNode(self.sciview, behaviour_name)
+#                     h.addBehaviour(behaviour_name, movement_command )
+#                     h.addKeyBinding(behaviour_name,keybinding)
+                    
+#             #move on own
             speed_keybindings = {"slow":"", "fast":"shift ", "veryfast": "ctrl shift "}
-            direction_keybindings = {"up":"X","down":"C","left":"A"}#,"right":"D","forward":"W","back":"S"}
+            direction_keybindings = {"up":"N","down":"M","left":"J","right":"L","forward":"I","back":"K"}
             for speed in speed_keybindings:
                 for direction in direction_keybindings:
                     behaviour_name = "node_move_"+direction+"_"+speed
                     keybinding = speed_keybindings[speed]+direction_keybindings[direction]
                     movement_command = MoveNode(self.sciview, behaviour_name)
-                    print("{},{}".format(behaviour_name, keybinding))
                     h.addBehaviour(behaviour_name, movement_command )
                     h.addKeyBinding(behaviour_name,keybinding)
+
         
             #self.sciview.centerOnNode(closest_node)
             material = closest_node.getMaterial()
@@ -127,18 +142,7 @@ class Viewer:
             material.setAmbient(color)
             material.setDiffuse(color)
             material.setSpecular(color)
-            #closest_node.set
-            #closest_node.setPosition(self.sciview.getGLVector(0, 0, 0))
-            print(matches)
-            print(closest_node.getNodeType() )
-            camera = self.sciview.getCamera()
-            self.printGL(camera.getPosition(), "camera position: ")
-            self.printGL(camera.getForward(), "camera forward: ")
-            print("field of view: {}".format(camera.getFov()))
-
-            print("pos x: {} y: {} z: {}".format(closest_node.getPosition().get(0), closest_node.getPosition().get(1), closest_node.getPosition().get(2)))
             
-            print("matches: {} x: {} y: {}".format(closest_node.getName(),x,y))
 
     def printGL(self, glvector, description=""):
         print("{} {}, {}, {}".format(description, glvector.get(0),glvector.get(1),glvector.get(2)))
