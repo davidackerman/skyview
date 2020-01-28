@@ -1,5 +1,5 @@
 from .annotation_layer import AnnotationLayer
-from .img_wrapper import ij, MakeAccessFunction3
+from .img_wrapper import ij, MakeAccessFunction3, MoveNode
 #from jnius import cast
 import jnius
 
@@ -102,6 +102,19 @@ class Viewer:
         if matches:
             closest_node = matches[ 0 ].getNode()
             self.sciview.setActiveNode(closest_node)
+            #MovementCommand = jnius.autoclass('graphics.scenery.controls.behaviours.MovementCommand')
+            #movement_command =  MovementCommand("move_up", "up", closest_node, 1.0 )
+            #h = self.sciview.getInputHandler()
+            #h.addBehaviour("move_node_up_fast", movement_command )
+            #h.addKeyBinding("move_node_up_fast", "shift X");
+
+            temp = MoveNode(self.sciview)
+            NodeTranslateControl = jnius.autoclass('sc.iview.controls.behaviours.NodeTranslateControl')
+            node_translate_control = NodeTranslateControl(self.sciview, .001)
+            h = self.sciview.getInputHandler()
+            h.addBehaviour( "nt", temp );
+            h.addKeyBinding("nt","shift X")
+        
             #self.sciview.centerOnNode(closest_node)
             material = closest_node.getMaterial()
             position = closest_node.getPosition()
@@ -139,10 +152,6 @@ class Viewer:
         sciview.setObjectSelectionMode(self.set_object_selection_mode())
         
                 
-        NodeTranslateControl = jnius.autoclass('sc.iview.controls.behaviours.NodeTranslateControl')
-        node_translate_control = NodeTranslateControl(sciview, .001)
-        h = sciview.getInputHandler()
-        h.addBehaviour( "nt", node_translate_control );
-        h.addKeyBinding("nt","T button1")
-        #h.setBehaviour("button1 ")
+
+
         return sciview
