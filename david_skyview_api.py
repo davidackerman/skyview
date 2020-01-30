@@ -44,12 +44,14 @@ class SkyViewApplication:
 
 if __name__ == "__main__":
 
-    app = SkyViewApplication()
     
-    #multichannel = io.imread("./mitosis_8bit.tif")
+    embryo = io.imread("./frame_530_composite_12p5percent.tif") # need this first otherwise causes crash
+
+#    embryo = []
     #tczyx
     #dimensions = multichannel.shape
-
+    app = SkyViewApplication()
+        
     lut_names = ['Red.lut','Green.lut','Blue.lut']
     #app.viewer.sciview.setColormap(volume,'Red')
 
@@ -71,15 +73,23 @@ if __name__ == "__main__":
         )    
     
 #     # register basic callbacks
-    annotation_layer.register_callback(
-        sv.Events.ON_HOVER_ENTER,
-        lambda l, a: app.handle_hover_enter(l, a))
-    annotation_layer.register_callback(
-        sv.Events.ON_HOVER_LEAVE,
-        lambda l, a: app.handle_hover_leave(l, a))
-    annotation_layer.register_callback(
-        sv.Events.ON_CLICK,
-        lambda l, a: app.handle_click(l, a))
+# #     annotation_layer.register_callback(
+# #         sv.Events.ON_HOVER_ENTER,
+# #         lambda l, a: app.handle_hover_enter(l, a))
+# #     annotation_layer.register_callback(
+# #         sv.Events.ON_HOVER_LEAVE,
+# #         lambda l, a: app.handle_hover_leave(l, a))
+# #     annotation_layer.register_callback(
+# #         sv.Events.ON_CLICK,
+# #         lambda l, a: app.handle_click(l, a))
+    
+    app.viewer.add_volume("embryo",
+               embryo,
+               chunk_shape = embryo.shape,
+               voxel_size= (1,1,1),
+               lut_name = 'Red.lut')
+
+
 
 #     for current_channel in range(0,dimensions[2]):
 #         #img = img[1:150,1:150,1:150]

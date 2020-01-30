@@ -100,7 +100,7 @@ class Viewer:
         return MakeAccessFunction3(
             lambda p1, raycast_result, x, y : self.do_stuff_with_selection(raycast_result, x, y))
 
-    def do_stuff_with_selection(self,raycast_result, x, y):  
+    def do_stuff_with_selection(self,raycast_result, x, y):
         matches = scyjava.to_python(raycast_result.getMatches())
         if matches:
             closest_node = matches[ 0 ].getNode()
@@ -118,9 +118,9 @@ class Viewer:
 #                     h.addBehaviour(behaviour_name, movement_command )
 #                     h.addKeyBinding(behaviour_name,keybinding)
                     
-#             #move on own
+            #move on own
             speed_keybindings = {"slow":"", "fast":"shift ", "veryfast": "ctrl shift "}
-            direction_keybindings = {"up":"N","down":"M","left":"J","right":"L","forward":"I","back":"K"}
+            direction_keybindings = {"up":"M","down":"N","left":"J","right":"L","forward":"I","back":"K"}
             for speed in speed_keybindings:
                 for direction in direction_keybindings:
                     behaviour_name = "node_move_"+direction+"_"+speed
@@ -153,6 +153,12 @@ class Viewer:
         result = ij.command().run(cmd, True).get()
         sciview = result.getOutput('sciView')
         sciview.getFloor().setVisible(False)
+        
+#        h = sciview.publicGetInputHandler()
+#         h.removeBehaviour("select_command")
+#         h.removeKeyBinding("select_command")
+#        h.removeBehaviour("object_selection_mode")
+#        h.removeKeyBinding("object_selection_mode")
         sciview.setObjectSelectionMode(self.set_object_selection_mode())
         
                 

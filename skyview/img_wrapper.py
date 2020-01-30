@@ -45,6 +45,16 @@ class MakeAccessFunction3(PythonJavaClass):
     def invoke(self, p1, p2, p3, p4):
         return self.func(p1, p2, p3, p4)
 
+class MakeAccessLongFunction(PythonJavaClass):
+    __javainterfaces__ = ['java/util/function/LongFunction']
+
+    def __init__(self, func):
+        super(MakeAccessLongFunction, self).__init__()
+        self.func = func
+    
+    @java_method('(J)Ljava/lang/Object;')
+    def apply(self, v):
+        return self.func(v)
 
 def chunk_index_to_slices(shape, chunk_shape, cell_index):
 
@@ -97,19 +107,23 @@ def get_chunk_access(array, chunk_shape, index, size):
 
 def arraylike_to_img(array, chunk_shape):
 
-    access_generator = MakeAccessBiFunction(
-        lambda i, s: get_chunk_access(array, chunk_shape, i, s))
+    #access_generator = MakeAccessBiFunction(
+    #    lambda i, s: get_chunk_access(array, chunk_shape, i, s))
+
+    access_generator = MakeAccessLongFunction(
+        lambda i: get_chunk_access(array, chunk_shape, i, 1))
 
     shape_xyz = array.shape[::-1]
     chunk_shape_xyz = chunk_shape[::-1]
 
     img = PythonHelpers.imgWithCellLoaderFromFunc(
-        shape_xyz,
-        chunk_shape_xyz,
-        access_generator,
-        imglyb.types.for_np_dtype(array.dtype, volatile=True),
-        imglyb.accesses.as_array_access(
+        shape_xyz, # dims
+        chunk_shape_xyz, # blockSize
+        access_generator, #bifunction makeaccess-->nees to be longfunction
+        imglyb.types.for_np_dtype(array.dtype, volatile=True), #T
+        imglyb.accesses.as_array_access( #a
             get_chunk(array, chunk_shape, 0),
-            volatile=True))  # TODO: is array access really needed here?
+            volatile=True),
+        imglyb.caches.BoundedSoftRefLoaderCache(1))  # TODO: is array access really needed here?
 
     return img

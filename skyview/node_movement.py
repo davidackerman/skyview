@@ -65,10 +65,3 @@ class MoveNode(PythonJavaClass):
     @java_method('(II)V')
     def click(self,x,y):
         self.set_movement_behavior()
-        #return 1
-      #  new_position = self.v_add(self.active_node.getPosition(), self.v_multiply_c(self.camera.getUp(), 1.0 * self.camera.getDeltaT()))
-      #  self.active_node.setPosition(new_position)
-        #self.active_node.setPosition(self.sciview.getGLVector(self.active_node.position.get(0) + self.camera.up.get(0) * 1.0 * self.camera.deltaT,
-        #                                                          self.active_node.position.get(1) + self.camera.up.get(1) * 1.0 * self.camera.deltaT,
-        #                                                          self.active_node.position.get(2) + self.camera.up.get(2) * 1.0 * self.camera.deltaT))
-
